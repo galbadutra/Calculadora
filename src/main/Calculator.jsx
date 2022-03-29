@@ -29,7 +29,28 @@ export default class Calculator extends Component {
     }
 
     setOperation(operation) {
-        console.log(operation)
+        if (this.state.current === 0) { // significa que recebi o sinal da operação e vou para o segunda posição
+            this.setState({ current: 1, operation, clearDisplay: true }) //mudando o estado passando os parametros
+        } else {
+            const equals = operation === '=' //bool para passar os dados corretamente
+            const currentOperation = this.state.operation //pegar a posição do ultima operação digitada
+
+            const values = [...this.state.values] // copia do array clonada
+            try {
+                values[0] = eval(`${values[0]} ${currentOperation} ${values[1]}`) // faz a operação
+            } catch (e) {
+                values[0] = this.state.values[0]
+            }
+            values[1] = 0 // ultima posicao do array é limpa
+            this.setState({
+                displayValue: values[0], //passar o valor da operação para o estado do display 
+                operation: equals ? null : operation, // se equals for true quer dizer que foi realizado uma operação entao recebe null, senao repassa denovo
+                current: equals ? 0 : 1, // se equals foi true entao a segunda posiçao do  vetor foi limpar entao volta para posicao 0 do vetor
+                clearDisplay: !equals, //
+                values  // atualizando o array
+            })
+        }
+
     }
 
     addDigit(n) {
